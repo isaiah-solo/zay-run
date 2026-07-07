@@ -1,11 +1,9 @@
 {
-  "name": "zay-run",
-  "image": "mcr.microsoft.com/devcontainers/universal:2",
-  "customizations": {
-    "vscode": {
-      "extensions": [
-        "anthropic.claude-code"
-      ]
-    }
-  }
+	"name": "zay-run",
+	"image": "mcr.microsoft.com/devcontainers/universal:2",
+	"customizations": {
+		"vscode": {
+			"extensions": ["anthropic.claude-code"]
+		}
+	}
 }
