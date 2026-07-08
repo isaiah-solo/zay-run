@@ -99,17 +99,16 @@ export default function Typewriter() {
 				<span className="bg-[#0078d4] text-white dark:bg-[#2d5c8f] dark:text-white">
 					{text.slice(splitAt)}
 				</span>
-				{/* Kept mounted (invisible) during selection so line width
-				    never changes and wrapping stays put */}
+				{/* Block cursor sized to ascender height (the | glyph falls short
+				    of tall letters). Kept mounted (invisible) during selection so
+				    line width never changes and wrapping stays put */}
 				<span
-					className={
+					className={`mx-px inline-block h-[0.75em] w-[2px] ${
 						phase === 'selecting'
 							? 'invisible'
-							: 'animate-blink text-zinc-400 dark:text-zinc-600'
-					}
-				>
-					|
-				</span>
+							: 'animate-blink bg-zinc-400 dark:bg-zinc-600'
+					}`}
+				/>
 			</span>
 		</p>
 	);
