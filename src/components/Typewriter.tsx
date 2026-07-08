@@ -34,6 +34,10 @@ export default function Typewriter() {
 	}, []);
 
 	const target = phrase === -1 ? INTRO : PHRASES[phrase];
+	// Invisible rest-of-current-word: commits the word's full width from its
+	// first letter so it wraps as a unit instead of jumping lines mid-word,
+	// while the visible text still grows centered.
+	const wordRemainder = target.slice(text.length).match(/^\S*/)?.[0] ?? '';
 
 	useEffect(() => {
 		if (reducedMotion) return;
@@ -71,9 +75,7 @@ export default function Typewriter() {
 				<span className="animate-blink text-zinc-400 dark:text-zinc-600">
 					|
 				</span>
-				{/* Invisible remainder reserves the phrase's final layout so
-				    line breaks never move while typing */}
-				<span className="invisible">{target.slice(text.length)}</span>
+				<span className="invisible">{wordRemainder}</span>
 			</span>
 		</p>
 	);
