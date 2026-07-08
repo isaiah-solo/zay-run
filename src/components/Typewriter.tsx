@@ -67,9 +67,7 @@ export default function Typewriter() {
 			<span className="sr-only">Welcome!</span>
 			<span aria-hidden="true">
 				{text}
-				<span className="animate-pulse text-zinc-400 dark:text-zinc-600">
-					|
-				</span>
+				<span className="animate-blink text-zinc-400 dark:text-zinc-600">|</span>
 			</span>
 		</p>
 	);

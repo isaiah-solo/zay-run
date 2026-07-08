@@ -1,1 +1,11 @@
 @import "tailwindcss";
+
+@theme {
+	--animate-blink: blink 1.06s step-end infinite;
+
+	@keyframes blink {
+		50% {
+			opacity: 0;
+		}
+	}
+}
