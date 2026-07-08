@@ -66,7 +66,9 @@ export default function Typewriter() {
 		} else if (phase === 'selecting') {
 			if (selected < text.length) {
 				delay = SELECT_CHAR_MS;
-				update = () => setSelected(selected + 1);
+				// Two chars per step: browsers clamp nested timeouts to ~4ms,
+				// so halving the delay can't reliably double the speed
+				update = () => setSelected(Math.min(selected + 2, text.length));
 			} else {
 				delay = SELECT_HOLD_MS;
 				update = () => {
