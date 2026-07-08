@@ -103,7 +103,7 @@ export default function Typewriter() {
 				    of tall letters). Kept mounted (invisible) during selection so
 				    line width never changes and wrapping stays put */}
 				<span
-					className={`mx-px inline-block h-[0.75em] w-[2px] ${
+					className={`mx-px inline-block h-[0.82em] w-[2px] ${
 						phase === 'selecting'
 							? 'invisible'
 							: 'animate-blink bg-zinc-400 dark:bg-zinc-600'
