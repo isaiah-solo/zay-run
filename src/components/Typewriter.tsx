@@ -15,7 +15,7 @@ const PHRASES = [
 ];
 
 const TYPE_MS = 35;
-const DELETE_MS = 15;
+const DELETE_MS = 8;
 const HOLD_MS = 2200;
 const GAP_MS = 500;
 
