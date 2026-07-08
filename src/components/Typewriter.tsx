@@ -14,8 +14,8 @@ const PHRASES = [
 	'Achievement unlocked: found Isaiah on the internet.',
 ];
 
-const TYPE_MS = 60;
-const DELETE_MS = 30;
+const TYPE_MS = 35;
+const DELETE_MS = 15;
 const HOLD_MS = 2200;
 const GAP_MS = 500;
 
