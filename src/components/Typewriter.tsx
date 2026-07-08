@@ -68,7 +68,7 @@ export default function Typewriter() {
 				delay = SELECT_CHAR_MS;
 				// Two chars per step: browsers clamp nested timeouts to ~4ms,
 				// so halving the delay can't reliably double the speed
-				update = () => setSelected(Math.min(selected + 2, text.length));
+				update = () => setSelected(Math.min(selected + 3, text.length));
 			} else {
 				delay = SELECT_HOLD_MS;
 				update = () => {
@@ -96,7 +96,7 @@ export default function Typewriter() {
 			<span className="sr-only">Welcome!</span>
 			<span aria-hidden="true">
 				{text.slice(0, splitAt)}
-				<span className="bg-[#0078d4] text-white dark:bg-[#264f78] dark:text-zinc-100">
+				<span className="bg-[#0078d4] text-white dark:bg-[#2d5c8f] dark:text-white">
 					{text.slice(splitAt)}
 				</span>
 				{/* Kept mounted (invisible) during selection so line width
