@@ -33,9 +33,10 @@ export default function Typewriter() {
 		}
 	}, []);
 
+	const target = phrase === -1 ? INTRO : PHRASES[phrase];
+
 	useEffect(() => {
 		if (reducedMotion) return;
-		const target = phrase === -1 ? INTRO : PHRASES[phrase];
 		let delay: number;
 		let update: () => void;
 
@@ -60,14 +61,19 @@ export default function Typewriter() {
 
 		const timeout = window.setTimeout(update, delay);
 		return () => window.clearTimeout(timeout);
-	}, [text, phrase, deleting, reducedMotion]);
+	}, [text, target, deleting, reducedMotion, phrase]);
 
 	return (
 		<p className="min-h-16 text-center text-2xl font-medium tracking-tight sm:text-3xl">
 			<span className="sr-only">Welcome!</span>
 			<span aria-hidden="true">
 				{text}
-				<span className="animate-blink text-zinc-400 dark:text-zinc-600">|</span>
+				<span className="animate-blink text-zinc-400 dark:text-zinc-600">
+					|
+				</span>
+				{/* Invisible remainder reserves the phrase's final layout so
+				    line breaks never move while typing */}
+				<span className="invisible">{target.slice(text.length)}</span>
 			</span>
 		</p>
 	);
