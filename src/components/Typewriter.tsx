@@ -14,10 +14,13 @@ const PHRASES = [
 	'Achievement unlocked: found Isaiah on the internet.',
 ];
 
-const TYPE_MS = 35;
+const TYPE_MS = 22;
 const DELETE_MS = 8;
 const HOLD_MS = 2200;
 const GAP_MS = 500;
+// Brief beat after mid-phrase punctuation, like a human typist
+const PUNCT_MS = 280;
+const PUNCT = /[.,!?;:—]/;
 
 export default function Typewriter() {
 	const [text, setText] = useState('');
@@ -52,7 +55,7 @@ export default function Typewriter() {
 				};
 			}
 		} else if (text.length < target.length) {
-			delay = TYPE_MS;
+			delay = PUNCT.test(text[text.length - 1] ?? '') ? PUNCT_MS : TYPE_MS;
 			update = () => setText(target.slice(0, text.length + 1));
 		} else {
 			delay = HOLD_MS;
