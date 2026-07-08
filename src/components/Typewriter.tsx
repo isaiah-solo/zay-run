@@ -15,18 +15,21 @@ const PHRASES = [
 ];
 
 const TYPE_MS = 22;
-const DELETE_MS = 8;
 const HOLD_MS = 2200;
+// How long the select-all highlight lingers before the text vanishes
+const SELECT_MS = 450;
 const GAP_MS = 500;
 // Brief beat after mid-phrase punctuation, like a human typist
 const PUNCT_MS = 150;
 const PUNCT = /[.,!?;:—]/;
 
+type Phase = 'typing' | 'selected' | 'gap';
+
 export default function Typewriter() {
 	const [text, setText] = useState('');
 	// -1 renders the intro; 0..9 index into PHRASES
 	const [phrase, setPhrase] = useState(-1);
-	const [deleting, setDeleting] = useState(false);
+	const [phase, setPhase] = useState<Phase>('typing');
 	const [reducedMotion, setReducedMotion] = useState(false);
 
 	useEffect(() => {
@@ -43,42 +46,53 @@ export default function Typewriter() {
 		let delay: number;
 		let update: () => void;
 
-		if (deleting) {
-			if (text.length > 0) {
-				delay = DELETE_MS;
-				update = () => setText(text.slice(0, -1));
+		if (phase === 'typing') {
+			if (text.length < target.length) {
+				// Only pause when punctuation ends a clause (followed by a
+				// space), not inside tokens like "zay.run"
+				const punctBeat =
+					PUNCT.test(text[text.length - 1] ?? '') &&
+					/\s/.test(target[text.length] ?? '');
+				delay = punctBeat ? PUNCT_MS : TYPE_MS;
+				update = () => setText(target.slice(0, text.length + 1));
 			} else {
-				delay = GAP_MS;
-				update = () => {
-					setDeleting(false);
-					setPhrase((phrase + 1) % PHRASES.length);
-				};
+				delay = HOLD_MS;
+				update = () => setPhase('selected');
 			}
-		} else if (text.length < target.length) {
-			// Only pause when punctuation ends a clause (followed by a space),
-			// not inside tokens like "zay.run"
-			const punctBeat =
-				PUNCT.test(text[text.length - 1] ?? '') &&
-				/\s/.test(target[text.length] ?? '');
-			delay = punctBeat ? PUNCT_MS : TYPE_MS;
-			update = () => setText(target.slice(0, text.length + 1));
+		} else if (phase === 'selected') {
+			delay = SELECT_MS;
+			update = () => {
+				setText('');
+				setPhase('gap');
+			};
 		} else {
-			delay = HOLD_MS;
-			update = () => setDeleting(true);
+			delay = GAP_MS;
+			update = () => {
+				setPhrase((phrase + 1) % PHRASES.length);
+				setPhase('typing');
+			};
 		}
 
 		const timeout = window.setTimeout(update, delay);
 		return () => window.clearTimeout(timeout);
-	}, [text, target, deleting, reducedMotion, phrase]);
+	}, [text, target, phase, reducedMotion, phrase]);
 
 	return (
 		<p className="min-h-16 text-center text-2xl font-medium tracking-tight sm:text-3xl">
 			<span className="sr-only">Welcome!</span>
 			<span aria-hidden="true">
-				{text}
-				<span className="animate-blink text-zinc-400 dark:text-zinc-600">
-					|
+				<span
+					className={
+						phase === 'selected' ? 'bg-[#0078d4] text-white' : undefined
+					}
+				>
+					{text}
 				</span>
+				{phase !== 'selected' && (
+					<span className="animate-blink text-zinc-400 dark:text-zinc-600">
+						|
+					</span>
+				)}
 			</span>
 		</p>
 	);
