@@ -19,7 +19,7 @@ const DELETE_MS = 8;
 const HOLD_MS = 2200;
 const GAP_MS = 500;
 // Brief beat after mid-phrase punctuation, like a human typist
-const PUNCT_MS = 280;
+const PUNCT_MS = 150;
 const PUNCT = /[.,!?;:—]/;
 
 export default function Typewriter() {
@@ -55,7 +55,12 @@ export default function Typewriter() {
 				};
 			}
 		} else if (text.length < target.length) {
-			delay = PUNCT.test(text[text.length - 1] ?? '') ? PUNCT_MS : TYPE_MS;
+			// Only pause when punctuation ends a clause (followed by a space),
+			// not inside tokens like "zay.run"
+			const punctBeat =
+				PUNCT.test(text[text.length - 1] ?? '') &&
+				/\s/.test(target[text.length] ?? '');
+			delay = punctBeat ? PUNCT_MS : TYPE_MS;
 			update = () => setText(target.slice(0, text.length + 1));
 		} else {
 			delay = HOLD_MS;
