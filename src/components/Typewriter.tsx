@@ -16,20 +16,24 @@ const PHRASES = [
 
 const TYPE_MS = 22;
 const HOLD_MS = 2200;
-// How long the select-all highlight lingers before the text vanishes
-const SELECT_MS = 450;
+// Mouse-drag selection sweep, per character (end of phrase → beginning)
+const SELECT_CHAR_MS = 7;
+// How long the full selection lingers before the text vanishes
+const SELECT_HOLD_MS = 450;
 const GAP_MS = 500;
 // Brief beat after mid-phrase punctuation, like a human typist
 const PUNCT_MS = 150;
 const PUNCT = /[.,!?;:—]/;
 
-type Phase = 'typing' | 'selected' | 'gap';
+type Phase = 'typing' | 'selecting' | 'gap';
 
 export default function Typewriter() {
 	const [text, setText] = useState('');
 	// -1 renders the intro; 0..9 index into PHRASES
 	const [phrase, setPhrase] = useState(-1);
 	const [phase, setPhase] = useState<Phase>('typing');
+	// Number of characters selected, growing from the end of the text
+	const [selected, setSelected] = useState(0);
 	const [reducedMotion, setReducedMotion] = useState(false);
 
 	useEffect(() => {
@@ -57,14 +61,20 @@ export default function Typewriter() {
 				update = () => setText(target.slice(0, text.length + 1));
 			} else {
 				delay = HOLD_MS;
-				update = () => setPhase('selected');
+				update = () => setPhase('selecting');
 			}
-		} else if (phase === 'selected') {
-			delay = SELECT_MS;
-			update = () => {
-				setText('');
-				setPhase('gap');
-			};
+		} else if (phase === 'selecting') {
+			if (selected < text.length) {
+				delay = SELECT_CHAR_MS;
+				update = () => setSelected(selected + 1);
+			} else {
+				delay = SELECT_HOLD_MS;
+				update = () => {
+					setText('');
+					setSelected(0);
+					setPhase('gap');
+				};
+			}
 		} else {
 			delay = GAP_MS;
 			update = () => {
@@ -75,24 +85,29 @@ export default function Typewriter() {
 
 		const timeout = window.setTimeout(update, delay);
 		return () => window.clearTimeout(timeout);
-	}, [text, target, phase, reducedMotion, phrase]);
+	}, [text, target, phase, selected, reducedMotion, phrase]);
+
+	const splitAt = text.length - selected;
 
 	return (
 		<p className="min-h-16 text-center text-2xl font-medium tracking-tight sm:text-3xl">
 			<span className="sr-only">Welcome!</span>
 			<span aria-hidden="true">
+				{text.slice(0, splitAt)}
+				<span className="bg-[#0078d4] text-white dark:bg-[#264f78] dark:text-zinc-100">
+					{text.slice(splitAt)}
+				</span>
+				{/* Kept mounted (invisible) during selection so line width
+				    never changes and wrapping stays put */}
 				<span
 					className={
-						phase === 'selected' ? 'bg-[#0078d4] text-white' : undefined
+						phase === 'selecting'
+							? 'invisible'
+							: 'animate-blink text-zinc-400 dark:text-zinc-600'
 					}
 				>
-					{text}
+					|
 				</span>
-				{phase !== 'selected' && (
-					<span className="animate-blink text-zinc-400 dark:text-zinc-600">
-						|
-					</span>
-				)}
 			</span>
 		</p>
 	);
